@@ -50,3 +50,6 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+/.vs/GameDevSandbox
+/packages/raylib.5.0.0
+/x64/Debug
