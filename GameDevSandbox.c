@@ -47,9 +47,6 @@ Camera2D camera = { 0 };
 int PickRandomGrassTile() {
 	double r = (double)rand() / RAND_MAX;
 	if (r < 0.05) {
-		return TILE_TYPE_FLOWER1;
-	}
-	else if (r < 0.15) {
 		return TILE_TYPE_FLOWER2;
 	}
 	else {
@@ -67,7 +64,26 @@ void DrawTile(int pos_x, int pos_y, int tile_x, int tile_y, Texture2D texture) {
 }
 
 
+void GenerateGrassArea() {
+	int x = (WORLD_WIDTH / 2) + 2;
+	int y = (WORLD_HEIGHT / 2) + 2;
+	sTile startTile = world[x][y];
+	startTile.type = TILE_TYPE_FLOWER1;
+	world[x][y] = startTile;
+
+	world[x - 1][y].type = TILE_TYPE_FLOWER1;
+	world[x + 1][y].type = TILE_TYPE_FLOWER1;
+	world[x][y - 1].type = TILE_TYPE_FLOWER1;
+	world[x][y + 1].type = TILE_TYPE_FLOWER1;
+	world[x - 1][y - 1].type = TILE_TYPE_FLOWER1;
+	world[x + 1][y + 1].type = TILE_TYPE_FLOWER1;
+	world[x - 1][y + 1].type = TILE_TYPE_FLOWER1;
+	world[x + 1][y - 1].type = TILE_TYPE_FLOWER1;
+
+}
+
 void GenerateMap() {
+
 	for (int i = 0; i < WORLD_WIDTH; i++)
 	{
 		for (int j = 0; j < WORLD_HEIGHT; j++)
@@ -79,7 +95,12 @@ void GenerateMap() {
 			};
 		}
 	}
+
+	GenerateGrassArea();
+
 }
+
+
 
 void LoadImages() {
 	Image image = LoadImage("assets/tiles.png");
@@ -94,10 +115,9 @@ void LoadImages() {
 void SpawnPlayer() {
 
 	player = (sEntity){
-	.x = TILE_WIDTH * 3,
-	.y = TILE_HEIGHT * 3,
+	.x = TILE_WIDTH * (WORLD_WIDTH / 2),
+	.y = TILE_HEIGHT * (WORLD_HEIGHT / 2),
 	};
-
 	camera.target = (Vector2){ player.x, player.y };
 	camera.offset = (Vector2){ (float)screenWidth / 2.0f, (float)screenHeight / 2.0f };
 	camera.rotation = 0.0f;
