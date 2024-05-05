@@ -3,8 +3,6 @@
 #include <time.h>
 #include <raylib.h>
 #include <raymath.h>
-
-
 #define TILE_WIDTH 16
 #define TILE_HEIGHT 16
 #define MAX_TEXTURES 1
@@ -13,14 +11,15 @@
 #define WORLD_HEIGHT 30
 
 typedef enum {
-	TEXTURE_TILEMAP = 0
+	TEXTURE_TILEMAP = 0,
+	TEXTURE_PLAYER,
 } texture_asset;
 
 typedef enum {
 	TILE_TYPE_GRASS = 0,
 	TILE_TYPE_FLOWER1,
 	TILE_TYPE_FLOWER2,
-}tile_type;
+} tile_type;
 
 typedef struct {
 	int x;
@@ -60,11 +59,11 @@ int PickRandomGrassTile() {
 }
 
 // helper function to draw a tile at a given position
-void DrawTile(int pos_x, int pos_y, int tile_x, int tile_y) {
+void DrawTile(int pos_x, int pos_y, int tile_x, int tile_y, Texture2D texture) {
 	Rectangle source = { (float)(tile_x * TILE_WIDTH), (float)(tile_y * TILE_HEIGHT), (float)TILE_WIDTH, (float)TILE_HEIGHT };
 	Rectangle dest = { (float)(pos_x), (float)(pos_y), TILE_WIDTH, TILE_HEIGHT };
 	Vector2 origin = { 0, 0 };
-	DrawTexturePro(textures[TEXTURE_TILEMAP], source, dest, origin, 0.0f, WHITE);
+	DrawTexturePro(texture, source, dest, origin, 0.0f, WHITE);
 }
 
 
@@ -86,6 +85,10 @@ void LoadImages() {
 	Image image = LoadImage("assets/tiles.png");
 	textures[TEXTURE_TILEMAP] = LoadTextureFromImage(image);
 	UnloadImage(image);
+
+	Image playerImage = LoadImage("assets/player.png");
+	textures[TEXTURE_PLAYER] = LoadTextureFromImage(playerImage);
+	UnloadImage(playerImage);
 }
 
 void SpawnPlayer() {
@@ -161,7 +164,7 @@ void DrawWorld() {
 
 
 			}
-			DrawTile(tile.x * TILE_WIDTH, tile.y * TILE_HEIGHT, texture_index_x, texture_index_y);
+			DrawTile(tile.x * TILE_WIDTH, tile.y * TILE_HEIGHT, texture_index_x, texture_index_y, textures[TEXTURE_TILEMAP]);
 		}
 
 
@@ -178,7 +181,7 @@ void DrawUI() {
 }
 
 void DrawPlayer() {
-	DrawTile(camera.target.x, camera.target.y, 4, 0);
+	DrawTile(camera.target.x, camera.target.y, 0, 0, textures[TEXTURE_PLAYER]);
 }
 
 void UnloadTextures() {
