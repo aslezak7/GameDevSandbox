@@ -11,6 +11,11 @@
 #define WORLD_HEIGHT 30
 
 typedef enum {
+	OVERWORLD = 0,
+	BATTLE,
+} game_mode;
+
+typedef enum {
 	TEXTURE_TILEMAP = 0,
 	TEXTURE_PLAYER,
 } texture_asset;
@@ -33,6 +38,7 @@ typedef struct {
 } sEntity;
 
 sEntity player;
+int currentMode = 0;
 
 const int screenWidth = 800;
 const int screenHeight = 600;
@@ -42,6 +48,10 @@ Texture2D textures[MAX_TEXTURES];
 sTile world[WORLD_WIDTH][WORLD_HEIGHT];
 
 Camera2D camera = { 0 };
+
+sTile GetTileFromWorldPos(int x, int y) {
+	return world[x / TILE_WIDTH][y / TILE_HEIGHT];
+}
 
 // pick a random tile type with flower tiles being a much lower chance than a normal grass tile
 int PickRandomGrassTile() {
@@ -152,8 +162,16 @@ void HandlePlayerMovement() {
 		x += TILE_WIDTH;
 	}
 
+
+
+
 	player.x = x;
 	player.y = y;
+
+	sTile destTile = GetTileFromWorldPos(player.x, player.y);
+	if (destTile.type == TILE_TYPE_FLOWER1) {
+		currentMode = 1;
+	}
 	camera.target = (Vector2){ player.x, player.y };
 }
 
@@ -192,7 +210,11 @@ void DrawWorld() {
 	}
 }
 
-void DrawUI() {
+void DrawBattle() {
+	ClearBackground(RED);
+}
+
+void DrawOverworldUI() {
 	DrawRectangle(5, 5, 300, 120, Fade(SKYBLUE, 0.5f));
 	DrawRectangleLines(5, 5, 300, 120, BLUE);
 
@@ -218,18 +240,28 @@ void GameStartup() {
 }
 
 void GameUpdate() {
-
-	HandlePlayerMovement();
-	HandleCameraZoom();
+	if (currentMode == OVERWORLD) {
+		HandlePlayerMovement();
+		HandleCameraZoom();
+	}
 }
 
 void GameRender() {
 
 	BeginMode2D(camera);
-	DrawWorld();
-	DrawPlayer();
+	if (currentMode == OVERWORLD) {
+		DrawWorld();
+		DrawPlayer();
+	}
+	else if (currentMode == BATTLE) {
+		DrawBattle();
+	}
 	EndMode2D();
-	DrawUI();
+
+	if (currentMode == OVERWORLD) {
+		DrawOverworldUI();
+	}
+
 
 }
 
